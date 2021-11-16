@@ -1,0 +1,21 @@
+pragma solidity >=0.6.0 <0.9.0;
+
+contract SimpleStorage { //input and retrieve
+    
+    //this will initialize as 0
+    uint256 favoritenum; //if have public, example: uint256 *public* favbuy.... there will be a button that will call the variable
+    /*bool favbool = false;
+    string favstring = "Adib";
+    int256 favint = -1;
+    address favadd = 0x08e71074A0bc4487350b062EFB77f464Da0a9073;
+    bytes favbytes = "cat";*/
+    
+    
+    function store(uint256 _favoritenum) public {
+        favoritenum = _favoritenum;
+    }
+    
+    function retrieve() public view returns(uint256){
+        return favoritenum;
+    }
+}
