@@ -1,0 +1,31 @@
+//SPDX License Identifier :MIT
+
+pragma solidity ^0.6.0;
+
+import "./SimpleStorage.sol"; //importing the contract from same folder
+
+
+contract StorageFactory{
+    
+    SimpleStorage[] public simpleStorageArray; //create the simplestorage array which store address i think
+    
+    function createSimpleStorageContract() public{ 
+        SimpleStorage SimpleStorage = new SimpleStorage(); //create an object of the simplestorage contract 
+        simpleStorageArray.push(SimpleStorage); //push the address into the array
+    }
+    
+    function sfStore(uint256 _simpleStorageIndex, uint256 _simpleStorageNumber) public{ //store function which takes the user input, in this we take *the index of the array to store, and the number that we want to store
+        //address
+        //abi
+        
+        //SimpleStorage simpleStorage = SimpleStorage(address(simpleStorageArray[_simpleStorageIndex]));
+        //simpleStorage.store(_simpleStorageNumber);
+        SimpleStorage(address(simpleStorageArray[_simpleStorageIndex])).store(_simpleStorageNumber); //calls the function get the address of the simple storage based on the index inputedd, than .store the number
+    }
+    
+    function sfGet(uint _simpleStorageIndex) public view returns(uint256){ // takes which index that we want to see the value, input:index, output:number
+        //SimpleStorage simpleStorage = SimpleStorage(address(simpleStorageArray[_simpleStorageIndex]));
+        //return simpleStorage.retrieve();
+        return SimpleStorage(address(simpleStorageArray[_simpleStorageIndex])).retrieve();  //return, calls the function of SimpleStorage, get the right address based on the index of array, and then retrieve
+    }
+}
