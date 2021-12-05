@@ -1,0 +1,749 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <cstdlib>
+
+// List of header files used
+char answer,start='0';
+int currentwin=0,reward=0,num_lifeline=0,condition=0,wrong=0;
+int LL_use[2]={0},reward_array[10]={100,250,500,1000,1500,3000,5000,10000,20000,958650};  //List of rewards
+// Global Declarations
+void MainPage();
+void GamePage();
+void InstructionPage();
+void SetOfQuestions(int);
+int LifeLines(int);
+void LifeLineAction(int,int,int,int,int);
+int LL_0();
+int LL_1();
+int LL_2();
+void AnswerQuestion(int,int);
+void Output(int,char);
+void EraseTwoAnswers(int,int,int,int);
+void GiveTwoAnswers(int);
+// Above are the list of functions used
+int main()
+{
+	srand(time(NULL)); // for random'ing' numbers at each time
+	MainPage();
+	// when all questions are answered correctly, below will be shown
+	printf("\nCONGRATULATIONS\n");
+	printf("\nYOU ANSWER ALL THE QUESTIONS CORRECTLY!!\n");
+	printf("\nYOU WIN MYR %d\n",currentwin);
+	
+	exit(0);
+	return 0;
+}
+void MainPage() // function where the startpage of the quiz game
+{
+	system("cls");
+	currentwin=0;
+	reward=0;
+	condition=0;
+	num_lifeline=0;
+	LL_use[0]=0;
+	LL_use[1]=0;
+	wrong=0;
+	// the above formulas are to reset the data of the game before
+	printf("**************** WELCOME TO THE QUIZ GAME ****************\n");
+	printf("\n1) START GAME\n");
+	printf("\n2) Instructions\n");
+	printf("\n3) Exit\n");
+	printf("\nInsert your options: "); // read input(start) from user
+	fflush(stdin);
+	scanf("%c",&start);
+	while(start<'1'||start>'3') // whenever the input is out of range
+	{
+		printf("INVALID NUMBER !\nInsert your options: ");
+		fflush(stdin);
+		scanf("%c",&start);
+	}
+	switch(start)
+	{
+		case '1': GamePage(); break; // Going to function GamePage()
+		case '2': InstructionPage(); MainPage(); break;
+		case '3': exit(0); // To exit program
+	}
+}
+void GamePage() // function where the game take place
+{
+	system("cls");
+	int x,rand_question;
+	for(x=1;x<=10;x++)
+	{
+		system("pause");
+		system("cls"); //to Clear the page
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward=reward_array[x-1]);
+		rand_question = 1+rand()%31;  // Random the 31 questions
+		SetOfQuestions(rand_question);
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin);
+		if(condition==2) // condition when all lifelines have been used
+		{
+			printf("\n***** LIFELINES *****\n");
+			printf("\n!! No more lifelines !!");
+			AnswerQuestion(rand_question,currentwin);
+			if(wrong>=1) // if answers are incorrect, return to main()
+			{
+				main(); break;
+			}
+			currentwin+=reward;
+			continue; // the paths(code) below skipped because user cannot use lifeline anymore
+		}
+		num_lifeline = LifeLines(num_lifeline); // Calling function to read number of lineline that user want to use
+		LifeLineAction(num_lifeline,rand_question,x,currentwin,reward); // Calling funtion to do the desired lifeline and the current question
+		if(wrong>=1) // if answers are incorrect, return to main()
+		{
+			main(); break;
+		}
+		currentwin+=reward;
+	}
+}
+void InstructionPage() // function to display the instructions of the game
+{
+	system("cls");
+	printf("INSTRUCTION PAGE\n"); 
+	printf("\n- There will be 10 questions and 4 answer choices each\n");
+	printf("- You are required to answer them one at a time\n");
+	printf("- You have 2 lifelines to help you;\n");
+	printf("- \tFifty-Fifty(50:50): Two of the incorrect answer choices will be eliminated\n");
+	printf("- \tDouble Dip(X2): Player can give two answers, but keep in mind when using the double dip lifelines,\n \tPLAYER CAN'T WALK AWAY FROM THE QUESTION\n");
+	printf("\n- Lifelines can be only used once\n");
+	printf("\nReturning to Main Page...\n\n");
+	system("pause");
+	return;
+}
+void SetOfQuestions(int rand_question) // function that contains a set of questions
+{
+	switch(rand_question) // list of questions
+	{
+		case 1:
+		printf("Which one is a hero character in DC?\n");
+		printf("\nA) Green Lantern B) Penguin C) Iron Man D) Captain Cold\n"); break;
+		case 2:
+		printf("What is the substance known by the chemical formula NH3?\n");
+		printf("\nA) Nitric acid B) Ammonia C) Nitrile D) Halogen\n"); break;
+		case 3:
+		printf("Which planet is nearest to the sun?\n");
+		printf("\nA) Earth B) Venus C) Mercury D) Mars\n"); break;
+		case 4:
+		printf("What do the Japanese people call their own country?\n");
+		printf("\nA) Sushi B) Bento C) Osaka D) Nippon\n"); break;
+		case 5:
+		printf("Who did the Mona Lisa paint?\n");
+		printf("\nA) Archimedes B) Leonardo da Vinvi C) Alexander Graham bell D) Galileo Galilei\n"); break;
+		case 6:
+		printf("Give another name for the study of fossils?\n");
+		printf("\nA) Dermatology B) Botany C) Paleontology D) Archaeology\n"); break;
+		case 7:
+		printf("In which year did Maradona score a goal with his hand?\n");
+		printf("\nA) 1986 B) 1987 C) 1985 D) 1988\n"); break;
+		case 8:
+		printf("What is the name of the winged horse in Greek mythology?\n");
+		printf("\nA) Harpies B) Minotaur C) Cerberus D) Pegasus\n"); break;
+		case 9:
+		printf("In computing what is RAM short for?\n");
+		printf("\nA) Random Account Memory B) Read Access Memory C) Random Access Memory D) Random Account Mount\n"); break;
+		case 10:
+		printf("What is the chemical formula for Table Salt?\n");
+		printf("\nA) NaCl B) CH3COONa C) KMnO4 D) KNO3\n"); break;
+		case 11:
+		printf("Who wrote an ancient Chinese military treatise known as The Art of War?\n");
+		printf("\nA)Zi Long  B)Zhao Yun  C)Sun Tzu  D)Chou Chin Peng\n"); break;
+		case 12:
+		printf("In humans, what is the only internal organ capable of regenerating lost tissue?\n");
+		printf("\nA)Liver  B)Muscle  C)Heart  D)Kidney\n"); break;
+		case 13:
+		printf("What ingredient in bread causes it to rise?\n");
+		printf("\nA)Baking Soda  B)Yeast  C)Cheese  D)Fungi\n"); break;
+		case 14:
+		printf("In what country would you find the temple complex Angkor Wat?\n");
+		printf("\nA)Indonesia  B)Vietnam  C)Cambodia  D)Thailand\n"); break;
+		case 15:
+		printf("What is the largest ocean on planet Earth?\n");
+		printf("\nA)Pacific Ocean  B)Sourthen Ocean  C)Atlantic Ocean  D)India Ocean\n"); break;
+		case 16:
+		printf("What fast food franchise has the most worldwide locations?\n");
+		printf("\nA)McDonald's  B)KFC  C)PizzaHut  D)Subway\n"); break;
+		case 17:
+		printf("Cynophobia is the fear of what kind of animal?\n");
+		printf("\nA)Cockroach  B)Cat  C)Spider  D)Dog\n"); break;
+		case 18:
+		printf("Mount Everest is located in ?\n");
+		printf("\nA)Pakistan  B)Nepal  C)Indonesia  D)Tibet\n"); break;
+		case 19:
+		printf("The gas used for making vegetables is ?\n");
+		printf("\nA)Oxygen  B)Carbon Dioxide  C)Nitrogen  D)Hydrogen\n"); break;
+		case 20:
+		printf("Deficiency of Iron leads to ?\n");
+		printf("\nA)Anaemia  B)Ricket  C)Stroke  D)Death\n"); break;
+		case 21:
+		printf("Which is the fastest animal on the land? \n");
+		printf("\nA)Tiger  B)Ostrich  C)Cheetah  D)Snake\n"); break;
+		case 22:
+		printf("In which country are the cities Ankara and Istanbul located?\n");
+		printf("\nA)Afghanistan  B)Turkey  C)Argentina  D)Syria\n"); break;
+		case 23:
+		printf("What is the currency of Paraguay?\n");
+		printf("\nA)Yuan  B)Dollar  C)Guarani  D)Ringgit\n"); break;
+		case 24:
+		printf("Which country makes the Mercedes Benz and Adidas?\n");
+		printf("\nA)USA  B)Japan  C)France  D)Germany\n"); break;
+		case 25:
+		printf("What is the instrument used to detect earthquakes\n");
+		printf("\nA)Seismograph  B)Thermometer  C)Barometer  D)Radiometer\n"); break;
+		case 26:
+		printf("Who was the first man to travel in space?\n");
+		printf("\nA)Albert Enstein  B)Edwin Ailrin  C)Neil Armstrong  D)Yuri Gargarin\n"); break;
+		case 27:
+		printf("Which of the following is not an endangered animal?\n");
+		printf("\nA)Siberian Tiger  B)Maned Wolf  C)Loggerhead Turtle  D)Dodo\n"); break;
+		case 28:
+		printf("2017 is the year of which animal?\n");
+		printf("\nA)Hare  B)Rooster  C)Rat  D)Monkey\n"); break;
+		case 29:
+		printf("Which is the principal source of energy for earth? \n");
+		printf("\nA)Electric  B)Water  C)Sun  D)Wind\n"); break;
+		case 30:
+		printf("Which is the coldest location in the earth? \n");
+		printf("\nA)East Antartica  B)Iceland  C)Taman Tas  D)South Artic\n"); break;
+		case 31:
+		printf("Which is the animal referred as the ship of the desert? \n");
+		printf("\nA)Ostrich  B)Camel  C)Donkey  D)Horse\n"); break;
+	}
+}
+// function to read number of lifeline that user want to use
+int LifeLines(int num_lifeline)
+{
+	int num_in_lifeline;
+	printf("\n***** LIFELINES *****\n");
+	switch(num_lifeline)  //get the answer from user whether to use what kind of Lifeline
+	{
+		case 0: num_in_lifeline=LL_0(); break;
+		case 1: num_in_lifeline=LL_1(); break;
+		case 2: num_in_lifeline=LL_2(); break;
+		case 3: num_in_lifeline=3; break;
+	}
+	return num_in_lifeline;
+}
+// function for directing number of lineline used to take action
+void LifeLineAction(int num_lifeline,int rand_question,int x,int currentwin,int reward)
+{
+	if(num_lifeline==0)
+	{
+		AnswerQuestion(rand_question,currentwin);
+	}
+	else if(num_lifeline==1)   // to call function of Fifty-Fifty(lifeline)
+	{
+		system("cls");
+		LL_use[0]++;
+		EraseTwoAnswers(rand_question,currentwin,reward,x);
+		AnswerQuestion(rand_question,currentwin);
+	}
+	else if(num_lifeline==2)  // to call function of Double-dib(lifeline)
+	{
+		LL_use[1]++;
+		GiveTwoAnswers(rand_question);
+	}
+	else if(num_lifeline==3) 
+	{
+		condition+=2; // when two lifelines used, condition will increase two values
+		LL_use[0]++;
+		system("cls"); 
+		EraseTwoAnswers(rand_question,currentwin,reward,x);
+		GiveTwoAnswers(rand_question);
+	}
+}
+// below are functions for displaying lifeline options
+int LL_0() // Display all lifelines options except when the lifeline had been used all
+{
+	int num_in_lifeline;
+	if(LL_use[0]>=1)
+	{
+		num_in_lifeline=LL_1();
+		return num_in_lifeline;
+	}
+	else if(LL_use[1]>=1)
+	{
+		num_in_lifeline=LL_2();
+		return num_in_lifeline;
+	}
+	printf("0) Later\n1) Fifty-Fifty(50:50)\n2) Double Dip(X2)\n3) Both lifelines\n");
+	printf("\nDo you want to use lifelines? ");
+	scanf("%d",&num_in_lifeline);
+	while(num_in_lifeline<0||num_in_lifeline>3)
+	{
+		printf("INVALID INPUT!\nDo you want to use lifelines?");
+		fflush(stdin);
+		scanf("%d",&num_in_lifeline);
+	}
+	if(num_in_lifeline==1||num_in_lifeline==2)
+		condition++; // when used a lifeline, condition will increase a value
+	return num_in_lifeline;
+}
+int LL_1() // Display only the double-dip lifeline and later options
+{
+	int num_in_lifeline;
+	printf("0) Later\n\n2) Double Dip(X2)\n");
+	printf("\nDo you want to use lifelines? ");
+	scanf("%d",&num_in_lifeline);
+	while(num_in_lifeline<0||num_in_lifeline>2||num_in_lifeline==1)
+	{
+		printf("INVALID INPUT!\nDo you want to use lifelines?");
+		fflush(stdin);
+		scanf("%d",&num_in_lifeline);
+	}
+	if(num_in_lifeline==2)
+		condition++; // when used a lifeline, condition will increase a value
+	return num_in_lifeline;
+}
+int LL_2() // Display only the Fifty-Fifty lifeline and later options
+{
+	int num_in_lifeline;
+	LL_use[1]++;
+	printf("0) Later\n1) Fifty-Fifty(50:50)\n");
+	printf("\nDo you want to use lifelines? ");
+	scanf("%d",&num_in_lifeline);
+	while(num_in_lifeline<0||num_in_lifeline>1)
+	{
+		printf("INVALID INPUT!\nDo you want to use lifelines? ");
+		fflush(stdin);
+		scanf("%d",&num_in_lifeline);
+	}
+	if(num_in_lifeline==1)
+		condition++; // when used a lifeline, condition will increase a value
+	return num_in_lifeline;
+}
+void AnswerQuestion(int rand_question,int currentwin) //function for answering the question
+{
+	printf("\nWhat is your answer? : ");
+	fflush(stdin);
+	scanf("%c",&answer);
+	if((answer>='A')&&(answer<='E')||(answer>='a')&&(answer<='e'))
+	{ 
+		Output(rand_question,answer);
+	}
+	else // if wrong input is entered, the following path will be executed
+	{
+		while((answer<'A')||(answer>'E')||(answer<'a')||(answer>'e'))
+		{  
+			printf("Invalid.\n");
+			printf("\nWhat is your answer? : ");
+			fflush(stdin);
+			scanf("%c",&answer);
+			if((answer>='A')&&(answer<='E')||(answer>='a')&&(answer<='e'))
+			{	 
+				Output(rand_question,answer); break;
+			}
+		}
+	}
+}
+void EraseTwoAnswers(int rand_question,int currentwin,int reward,int x) // function for Fifty-Fifty(lifeline)
+{
+	// Two wrong answers are removed from the following question
+	switch(rand_question)
+	{
+		case 1:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("Which one is a hero character in DC?\n");
+		printf("\nA) Green Lantern D) Captain Cold\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 2:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("What is the substance known by the chemical formula NH3?\n");
+		printf("\nB) Ammonia C) Nitrile\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 3:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("Which planet is nearest to the sun?\n");
+		printf("\nC) Mercury D) Mars\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 4:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("What do the Japanese people call their own country?\n");
+		printf("\nC) Osaka D) Nippon\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 5:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("Who did the Mona Lisa paint?\n");
+		printf("\nB) Leonardo da Vinvi C) Alexander Graham bell\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 6:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("Give another name for the study of fossils?\n");
+		printf("\nC) Paleontology D) Archaeology\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 7:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("In which year did Maradona score a goal with his hand?\n");
+		printf("\nA) 1986 D) 1988\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 8:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("What is the name of the winged horse in Greek mythology?\n");
+		printf("\nB) Minotaur D) Pegasus\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 9:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("In computing what is RAM short for?\n");
+		printf("\nB) Read Access Memory C) Random Access Memory\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 10:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("What is the chemical formula for Table Salt?\n");
+		printf("\nA) NaCl B) CH3COONa\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 11:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("Who wrote an ancient Chinese military treatise known as The Art of War?\n");
+		printf("\nA) Zi Long C) Sun Tzu\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 12:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("In humans, what is the only internal organ capable of regenerating lost tissue?\n");
+		printf("\nA) Liver D) Kidney\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 13:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("What ingredient in bread causes it to rise?\n");
+		printf("\nB) Yeast D) Fungi\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 14:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("In what country would you find the temple complex Angkor Wat?\n");
+		printf("\nC) Cambodia D) Thailand\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 15:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("What is the largest ocean on planet Earth?\n");
+		printf("\nA) Pacific Ocean C) Atlantic Ocean\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 16:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("What fast food franchise has the most worldwide locations?\n");
+		printf("\nA) McDonald's D) Subway\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 17:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("Cynophobia is the fear of what kind of animal?\n");
+		printf("\nC) Spider  D) Dog\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 18:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("Mount Everest is located in ?\n");
+		printf("\nB) Nepal D) Tibet\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 19:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("The gas used for making vegetables is ?\n");
+		printf("\nC) Nitrogen D) Hydrogen\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 20:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("Deficiency of Iron leads to ?\n");
+		printf("\nA) Anaemia  B) Ricket\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 21:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("Which is the fastest animal on the land? \n");
+		printf("\nB) Ostrich  C) Cheetah\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 22:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("In which country are the cities Ankara and Istanbul located?\n");
+		printf("\nA) Afghanistan  B) Turkey\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 23:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("What is the currency of Paraguay?\n");
+		printf("\nA) Yuan C) Guarani\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 24:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("Which country makes the Mercedes Benz and Adidas?\n");
+		printf("\nA) USA D) Germany\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 25:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("What is the instrument used to detect earthquakes\n");
+		printf("\nA) Seismograph D) Radiometer\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 26:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("Who was the first man to travel in space?\n");
+		printf("\nC) Neil Armstrong  D) Yuri Gargarin\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 27:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("Which of the following is not an endangered animal?\n");
+		printf("\nA) Siberian Tiger  B) Maned Wolf\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 28:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("2017 is the year of which animal?\n");
+		printf("\nA) Hare D) Monkey\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 29:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("Which is the principal source of energy for earth? \n");
+		printf("\nA) Electric C) Sun\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 30:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("Which is the coldest location in the earth? \n");
+		printf("\nA) East Antartica  B) Iceland\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+		case 31:
+		printf("Your Current Winnings are MYR %d\n",currentwin);
+		printf("\nQUESTION #%d is worth MYR %d\n\n\n",x,reward);
+		printf("Which is the animal referred as the ship of the desert? \n");
+		printf("\nA) Ostrich  B) Camel\n");
+		printf("\nYou can also : ");
+		printf("E) Stop Playing(and walk away with MYR %d)\n",currentwin); break;
+	}
+}
+void GiveTwoAnswers(int rand_question) // function for double-dip(lifeline)
+{
+	char answer1,answer2;
+	printf("\n!! REMINDER !!\nYOU CANNOT WALK AWAY");
+	printf("\nGive two answers : ");
+	fflush(stdin);
+	scanf("%c",&answer1);
+	fflush(stdin);
+	scanf("%c",&answer2);
+	switch(rand_question)
+	{
+		case 1:case 7:case 10:case 12:case 15:case 20:case 25:case 30:
+		while((answer1<'a'||answer1>'d')||(answer2<'a'||answer2>'d'))
+		{
+			printf("INVALID INPUT !!\nGive two answers : ");
+			fflush(stdin);
+			scanf("%c",&answer1);
+			fflush(stdin);
+			scanf("%c",&answer2);
+		}
+		if(answer1=='a'||answer2=='a')
+		{
+			printf("YOU ANSWER IT CORRECTLY\n"); break;
+		}
+		else
+		{
+			wrong++;
+			printf("INCORRECT ANSWER !! :(\n");
+			printf("Returning to Main Page...\n");
+			system("pause");
+			return;
+		}
+		case 2:case 5:case 13:case 18:case 22:case 27:case 31:
+		while((answer1<'a'||answer1>'d')||(answer2<'a'||answer2>'d'))
+		{
+			printf("INVALID INPUT !!\nGive two answers : ");
+			fflush(stdin);
+			scanf("%c",&answer1);
+			fflush(stdin);
+			scanf("%c",&answer2);
+		}
+		if(answer1=='b'||answer2=='b')
+		{
+			printf("YOU ANSWER IT CORRECTLY\n"); break;
+		}
+		else
+		{
+			wrong++;
+			printf("INCORRECT ANSWER !! :(\n");
+			printf("Returning to Main Page...\n");
+			system("pause");
+			return;
+		}
+		case 3:case 6:case 9:case 11:case 14:case 21:case 23:case 29:
+		while((answer1<'a'||answer1>'d')||(answer2<'a'||answer2>'d'))
+		{
+			printf("INVALID INPUT !!\nGive two answers : ");
+			fflush(stdin);
+			scanf("%c",&answer1);
+			fflush(stdin);
+			scanf("%c",&answer2);
+		}
+		if(answer1=='c'||answer2=='c')
+		{
+			printf("YOU ANSWER IT CORRECTLY\n"); break;
+		}
+		else
+		{
+			wrong++;
+			printf("INCORRECT ANSWER !! :(\n");
+			printf("Returning to Main Page...\n");
+			system("pause");
+			return;
+		}
+		case 4:case 8:case 16:case 17:case 19:case 24:case 26:case 28:
+		while((answer1<'a'||answer1>'d')||(answer2<'a'||answer2>'d'))
+		{
+			printf("INVALID INPUT !!\nGive two answers : ");
+			fflush(stdin);
+			scanf("%c",&answer1);
+			fflush(stdin);
+			scanf("%c",&answer2);
+		}
+		if(answer1=='d'||answer2=='d')
+		{
+			printf("YOU ANSWER IT CORRECTLY\n"); break;
+		}
+		else
+		{
+			wrong++;
+			printf("INCORRECT ANSWER !! :( \n");
+			printf("Returning to Main Page...\n");
+			system("pause");
+			return;
+		}
+	}
+}
+void Output(int rand_question,char answer)
+{
+	switch(rand_question) //to give output of the user's answer
+	{
+		case 1:case 7:case 10:case 12:case 15:case 20:case 25:case 30:
+		if(answer=='A'||answer=='a')
+		{
+			printf("YOU ANSWER IT CORRECTLY\n"); break;
+		}
+		else if(answer=='E'||answer=='e')
+		{
+			wrong++;
+			printf("You walk away with MYR %d\n\n",currentwin);
+			system("pause");
+			return;
+		}
+		else if((answer<'A'||answer>'D')||(answer<'a'||answer>'d'))
+		{
+			wrong++;
+			printf("INCORRECT ANSWER !! :(\n");
+			printf("Returning to Main Page...\n");
+			system("pause");
+			return;
+		}
+		case 2:case 5:case 13:case 18:case 22:case 27:case 31:
+		if(answer=='B'||answer=='b')
+		{
+			printf("YOU ANSWER IT CORRECTLY\n"); break;
+		}
+		else if(answer=='E'||answer=='e')
+		{
+			wrong++;
+			printf("You walk away with MYR %d\n\n",currentwin);
+			system("pause");
+			return;
+		}
+		else if((answer<'A'||answer>'D')||(answer<'a'||answer>'d'))
+		{
+			wrong++;
+			printf("INCORRECT ANSWER !! :(\n");
+			printf("Returning to Main Page...\n");
+			system("pause");
+			return;
+		}
+		case 3:case 6:case 9:case 11:case 14:case 21:case 23:case 29:
+		if(answer=='C'||answer=='c')
+		{
+			printf("YOU ANSWER IT CORRECTLY\n"); break;
+		}
+		else if(answer=='E'||answer=='e')
+		{
+			wrong++;
+			printf("You walk away with MYR %d\n\n",currentwin);
+			system("pause");
+			return;
+		}	
+		else if((answer<'A'||answer>'D')||(answer<'a'||answer>'d'))
+		{
+			wrong++;
+			printf("INCORRECT ANSWER !! :(\n");
+			printf("Returning to Main Page...\n");
+			system("pause");
+			return;
+		}
+		case 4:case 8:case 16:case 17:case 19:case 24:case 26:case 28:
+		if(answer=='D'||answer=='d')
+		{
+			printf("YOU ANSWER IT CORRECTLY\n"); break;
+		}
+		else if(answer=='E'||answer=='e')
+		{
+			wrong++;
+			printf("You walk away with MYR %d\n\n",currentwin);
+			system("pause");
+			return;
+		}	
+		else if((answer<'A'||answer>'D')||(answer<'a'||answer>'d'))
+		{
+			wrong++;
+			printf("INCORRECT ANSWER !! :( \n");
+			printf("Returning to Main Page...\n");
+			system("pause");
+			return;
+		}
+	}
+}
